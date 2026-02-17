@@ -1,0 +1,74 @@
+SHELL := /bin/bash
+
+APP_NAME = puppet
+DIST_DIR = dist
+BUILD_DIR = build
+TEST_OUTPUT_DIR = .test_output
+
+
+# Colors
+BLUE := \033[34m
+GREEN := \033[32m
+YELLOW := \033[33m
+RED := \033[31m
+MAGENTA := \033[35m
+CYAN := \033[36m
+RESET := \033[0m
+
+# Banner helper
+define banner
+	@printf "$(CYAN)==>$(RESET) $(1)\n"
+endef
+
+clean:
+	$(call banner, Cleaning project...)
+	@rm -rf .pytest_cache
+	@rm -rf __pycache__
+	@rm -rf .coverage
+	@rm -rf src/**/__pycache__
+	@rm -rf tests/**/__pycache__
+	@rm -rf $(BUILD_DIR)
+	@rm -rf $(DIST_DIR)
+	@rm -rf $(TEST_OUTPUT_DIR)
+	@printf "$(GREEN)Clean up complete.$(RESET)\n"
+
+lint:
+	$(call banner, Running Ruff linter...)
+	@poetry run ruff check src tests || true
+
+format:
+	$(call banner, Running Ruff formatter...)
+	@poetry run ruff format src tests
+
+pytest:
+	$(call banner, Running pytest...)
+	@poetry run pytest tests
+
+pytest-pdb:
+	$(call banner, Cleaning pytest output dir...)
+	@rm -rf $(TEST_OUTPUT_DIR)
+	$(call banner, Running pytest with pdb...)
+	@poetry run pytest --pdb tests
+
+mkdocs:
+	$(call banner, Building MkDocs documentation...)
+	@poetry run mkdocs serve
+
+check: lint pytest
+
+build: qrc update-version
+	$(call banner, Building $(APP_NAME)...)
+	@poetry build
+
+
+update-version:
+	@VERSION=$$(cat VERSION); \
+	printf "$(CYAN)==>$(RESET) Updating pyproject.toml version to %s\n" "$$VERSION"; \
+	poetry version $$VERSION
+
+qrc:
+	$(call banner, Generating QRC resources...)
+	@pyside6-rcc resources/resources.qrc -o resources/resources_rc.py
+	@printf "$(GREEN)QRC generation complete.$(RESET)\n"
+
+
