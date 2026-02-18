@@ -20,7 +20,15 @@ define banner
 	@printf "$(CYAN)==>$(RESET) $(1)\n"
 endef
 
-clean:
+.PHONY: help clean lint format pytest pytest-pdb mkdocs check build qrc
+
+help:
+	@echo "Available make targets:"
+	@echo ""
+	@grep -E '^[a-zA-Z0-9_-]+:.*?##' $(MAKEFILE_LIST) | sort | awk 'BEGIN {FS=":.*?##"}; {printf "  %-15s %s\n", $$1, $$2}'
+	@echo ""
+
+clean: ## Remove build artifacts, cache, and temporary files
 	$(call banner, Cleaning project...)
 	@rm -rf .pytest_cache
 	@rm -rf __pycache__
@@ -32,37 +40,36 @@ clean:
 	@rm -rf $(TEST_OUTPUT_DIR)
 	@printf "$(GREEN)Clean up complete.$(RESET)\n"
 
-lint:
+lint: ## Run Ruff linter on source and tests
 	$(call banner, Running Ruff linter...)
 	@poetry run ruff check src tests || true
 
-format:
+format: ## Format source and tests with Ruff
 	$(call banner, Running Ruff formatter...)
 	@poetry run ruff format src tests
 
-pytest:
+pytest: ## Run tests using mayapy_test
 	$(call banner, Running pytest...)
 	@poetry run ./mayapy_test tests
 
-pytest-pdb:
+pytest-pdb: ## Run tests with pdb and clean output
 	$(call banner, Cleaning pytest output dir...)
 	@rm -rf $(TEST_OUTPUT_DIR)
 	$(call banner, Running pytest with pdb...)
 	@poetry run ./mayapy_test --pdb tests
 
-mkdocs:
+mkdocs: ## Start MkDocs documentation server
 	$(call banner, Building MkDocs documentation...)
 	@poetry run mkdocs serve
 
-check: lint pytest
+check: lint pytest ## Run lint and tests
 
-build: qrc
+build: qrc ## Build project package
 	$(call banner, Building $(APP_NAME)...)
 	@poetry build
 
-qrc:
+qrc: ## Generate QRC resources
 	$(call banner, Generating QRC resources...)
 	@pyside6-rcc resources/resources.qrc -o resources/resources_rc.py
 	@printf "$(GREEN)QRC generation complete.$(RESET)\n"
-
 
