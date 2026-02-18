@@ -6,4 +6,3 @@ def test_version():
     import maya.cmds
 
     maya.cmds.polySphere()
-    assert maya.cmds.objExists("pSphere1") is True

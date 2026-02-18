@@ -56,15 +56,9 @@ mkdocs:
 
 check: lint pytest
 
-build: qrc update-version
+build: qrc
 	$(call banner, Building $(APP_NAME)...)
 	@poetry build
-
-
-update-version:
-	@VERSION=$$(cat VERSION); \
-	printf "$(CYAN)==>$(RESET) Updating pyproject.toml version to %s\n" "$$VERSION"; \
-	poetry version $$VERSION
 
 qrc:
 	$(call banner, Generating QRC resources...)

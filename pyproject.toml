@@ -9,7 +9,7 @@ license = {text = "MIT"}
 readme = "README.md"
 requires-python = ">=3.11.9,<3.14"
 packages = [
-    {include = "puppet"},
+    {include = "puppet", from="src"},
 ]
 dependencies = [
 
@@ -36,6 +36,10 @@ dev = [
     "ruff (>=0.14.5,<0.15.0)",
     
 ]
+
+[tool.setuptools]
+packages = ["puppet"]
+package-dir = { "" = "src" }
 
 [tool.ruff]
 src = ["src"]
