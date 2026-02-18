@@ -1,12 +1,10 @@
 #!/usr/bin/env bash
+
 set -euo pipefail
-
 # -----------------------------
-# 🧰 Configuration
-# -----------------------------
-
+# Configuration
+# -------------
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-
 # Load .env if exists (MAYAPY should be defined there)
 set -a
 [ -f "$SCRIPT_DIR/.env" ] && source "$SCRIPT_DIR/.env"
@@ -17,27 +15,17 @@ if [ -z "${MAYAPY:-}" ]; then
     exit 1
 fi
 
-if [ ! -x "$MAYAPY" ]; then
-    echo "mayapy not executable: $MAYAPY"
-    exit 1
-fi
-
 echo "Using mayapy: $MAYAPY"
-
 # -----------------------------
 #  Temporary Installation
 # -----------------------------
-
 TMP_SITE=$(mktemp -d)
 echo "Installing puppet and pytest dependencies into temporary location: $TMP_SITE"
-
 # Upgrade pip/setuptools/wheel first
 "$MAYAPY" -m pip install --upgrade pip setuptools wheel > /dev/null
-
 # Install puppet package into temp folder
 "$MAYAPY" -m pip wheel "$SCRIPT_DIR" -w "$TMP_SITE/wheel_build" > /dev/null
 "$MAYAPY" -m pip install "$TMP_SITE/wheel_build/"*.whl --target "$TMP_SITE" --no-cache-dir > /dev/null
-
 # Install ephemeral pytest dependencies
 "$MAYAPY" -m pip install \
     --target "$TMP_SITE" \
@@ -49,18 +37,14 @@ echo "Installing puppet and pytest dependencies into temporary location: $TMP_SI
 
 # Prepend temp site to PYTHONPATH so mayapy can see all installed packages
 export PYTHONPATH="$TMP_SITE:$PYTHONPATH"
-
 # -----------------------------
 #  Run Tests
 # -----------------------------
-
 "$MAYAPY" -m pytest "$SCRIPT_DIR/tests" "$@"
 EXIT_CODE=$?
-
 # -----------------------------
 #  Cleanup
 # -----------------------------
-
 rm -rf "$TMP_SITE"
 
 exit $EXIT_CODE
