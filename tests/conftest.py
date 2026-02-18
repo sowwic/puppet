@@ -1,5 +1,13 @@
 import pathlib
 import pytest
+import maya.standalone
+
+
+@pytest.fixture(scope="session", autouse=True)
+def maya_session():
+    maya.standalone.initialize(name="python")
+    yield
+    maya.standalone.uninitialize()
 
 
 @pytest.fixture(scope="session")

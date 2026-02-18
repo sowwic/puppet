@@ -42,13 +42,13 @@ format:
 
 pytest:
 	$(call banner, Running pytest...)
-	@poetry run pytest tests
+	@poetry run ./mayapy_test tests
 
 pytest-pdb:
 	$(call banner, Cleaning pytest output dir...)
 	@rm -rf $(TEST_OUTPUT_DIR)
 	$(call banner, Running pytest with pdb...)
-	@poetry run pytest --pdb tests
+	@poetry run ./mayapy_test --pdb tests
 
 mkdocs:
 	$(call banner, Building MkDocs documentation...)
