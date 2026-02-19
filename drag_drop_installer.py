@@ -1,12 +1,17 @@
 # Modified from https://github.com/nxt-dev/nxt_editor/blob/release/nxt_editor/integration/maya/drag_into_maya.py
 
 import os
-from maya import cmds
 import pathlib
+import tomllib
 
-MODULE_FILE_NAME = "puppet.mod"
+from maya import cmds
+
+
 ROOT_DIR = pathlib.Path(__file__).parent.absolute()
 SRC_DIR = ROOT_DIR / "src"
+PYPROJECT_PATH = ROOT_DIR / "pyproject.toml"
+MODULE_FILE_NAME = "puppet.mod"
+PLUGINS_DIR = SRC_DIR / "plug-ins"
 VERSION_FILE = ROOT_DIR / "VERSION"
 TEMPLATE_MODULE_FILE = ROOT_DIR / "resources" / MODULE_FILE_NAME
 
@@ -17,12 +22,14 @@ def get_version() -> str:
     Returns:
         str: Version string.
     """
+    with PYPROJECT_PATH.open("rb") as toml_file:
+        data = tomllib.load(toml_file)
+
     version = "0.0.0"
     try:
-        with VERSION_FILE.open() as version_file:
-            version = version_file.read().strip()
-    except FileNotFoundError:
-        cmds.warning(f"VERSION file not found at {VERSION_FILE}")
+        version: str = data["project"]["version"]
+    except KeyError:
+        cmds.warning("Could not find [project].version in pyproject.toml")
     return version
 
 
@@ -33,13 +40,14 @@ def onMayaDroppedPythonFile(*args):
     module_content = TEMPLATE_MODULE_FILE.read_text()
 
     # Fill in template file
+    module_content = module_content.replace("<VERSION>", get_version())
     module_content = module_content.replace("<ROOT_PATH>", str(ROOT_DIR))
     module_content = module_content.replace("<SRC_PATH>", str(SRC_DIR))
-    module_content = module_content.replace("<VERSION>", get_version())
+    module_content = module_content.replace("<PLUGINS_PATH>", str(PLUGINS_DIR))
 
     # Try to find modules directory
     module_paths = os.getenv("MAYA_MODULE_PATH")
-    prime_module_path = pathlib.Path(module_paths.rsplit(":")[0])
+    prime_module_path = pathlib.Path(module_paths.rsplit(":")[0])  # ty: ignore
     prime_module_path.mkdir(parents=True, exist_ok=True)
 
     # Confirm modules directory
