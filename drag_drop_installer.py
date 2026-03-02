@@ -46,14 +46,13 @@ def onMayaDroppedPythonFile(*args):
     module_content = module_content.replace("<PLUGINS_PATH>", str(PLUGINS_DIR))
 
     # Try to find modules directory
-    module_paths = os.getenv("MAYA_MODULE_PATH")
-    prime_module_path = pathlib.Path(module_paths.rsplit(":")[0])  # ty: ignore
-    prime_module_path.mkdir(parents=True, exist_ok=True)
+    user_maya_dir = os.environ.get("MAYA_APP_DIR")
+    user_mods_dir = os.path.join(user_maya_dir, "modules")
 
     # Confirm modules directory
     caption = "Select maya modules directory"
     result = cmds.fileDialog2(
-        caption=caption, startingDirectory=prime_module_path.as_posix(), fileMode=2
+        caption=caption, startingDirectory=user_mods_dir, fileMode=2
     )
     if not result[0]:
         cmds.warning("No directory selected, aborting puppet installation.")

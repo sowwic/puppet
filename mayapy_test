@@ -22,10 +22,10 @@ echo "Using mayapy: $MAYAPY"
 TMP_SITE=$(mktemp -d)
 echo "Installing puppet and pytest dependencies into temporary location: $TMP_SITE"
 # Upgrade pip/setuptools/wheel first
-"$MAYAPY" -m pip install --upgrade pip setuptools wheel > /dev/null
+"$MAYAPY" -m pip install --upgrade pip setuptools wheel 
 # Install puppet package into temp folder
-"$MAYAPY" -m pip wheel "$SCRIPT_DIR" -w "$TMP_SITE/wheel_build" > /dev/null
-"$MAYAPY" -m pip install "$TMP_SITE/wheel_build/"*.whl --target "$TMP_SITE" --no-cache-dir > /dev/null
+"$MAYAPY" -m pip wheel "$SCRIPT_DIR" -w "$TMP_SITE/wheel_build" 
+"$MAYAPY" -m pip install "$TMP_SITE/wheel_build/"*.whl --target "$TMP_SITE" --no-cache-dir 
 # Install ephemeral pytest dependencies
 "$MAYAPY" -m pip install \
     --target "$TMP_SITE" \
@@ -33,14 +33,16 @@ echo "Installing puppet and pytest dependencies into temporary location: $TMP_SI
     pytest \
     pytest-cov \
     pytest-mock \
-    pytest-qt > /dev/null
+    pytest-qt
 
+unset PATH
+unset PYTHONPATH
 # Prepend temp site to PYTHONPATH so mayapy can see all installed packages
 export PYTHONPATH="$TMP_SITE:$PYTHONPATH"
 # -----------------------------
 #  Run Tests
 # -----------------------------
-"$MAYAPY" -m pytest "$SCRIPT_DIR/tests" "$@"
+"$MAYAPY" -m pytest -vvv "$SCRIPT_DIR/tests" "$@"
 EXIT_CODE=$?
 # -----------------------------
 #  Cleanup

@@ -31,6 +31,7 @@ help:
 clean: ## Remove build artifacts, cache, and temporary files
 	$(call banner, Cleaning project...)
 	@rm -rf .pytest_cache
+	@rm -rf .ruff_cache
 	@rm -rf __pycache__
 	@rm -rf .coverage
 	@rm -rf src/**/__pycache__
@@ -42,31 +43,31 @@ clean: ## Remove build artifacts, cache, and temporary files
 
 lint: ## Run Ruff linter on source and tests
 	$(call banner, Running Ruff linter...)
-	@poetry run ruff check src tests || true
+	@uv run ruff check src tests || true
 
 format: ## Format source and tests with Ruff
 	$(call banner, Running Ruff formatter...)
-	@poetry run ruff format src tests
+	@uv run ruff format src tests
 
 pytest: ## Run tests using mayapy_test
 	$(call banner, Running pytest...)
-	@poetry run ./mayapy_test tests
+	@uv run ./mayapy_test tests
 
 pytest-pdb: ## Run tests with pdb and clean output
 	$(call banner, Cleaning pytest output dir...)
 	@rm -rf $(TEST_OUTPUT_DIR)
 	$(call banner, Running pytest with pdb...)
-	@poetry run ./mayapy_test --pdb tests
+	@uv run ./mayapy_test --pdb tests
 
 mkdocs: ## Start MkDocs documentation server
 	$(call banner, Building MkDocs documentation...)
-	@poetry run mkdocs serve
+	@uv run mkdocs serve
 
 check: lint pytest ## Run lint and tests
 
 build: qrc ## Build project package
 	$(call banner, Building $(APP_NAME)...)
-	@poetry build
+	@uv build
 
 qrc: ## Generate QRC resources
 	$(call banner, Generating QRC resources...)
