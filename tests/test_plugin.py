@@ -21,3 +21,13 @@ def test_uninitialize_plugin():
     cmds.unloadPlugin(PLUGIN_NAME)
     # Check if plugin is unloaded
     assert not cmds.pluginInfo(PLUGIN_NAME, query=True, loaded=True)
+
+
+def test_qt_model():
+    from PySide6.QtGui import QStandardItemModel, QStandardItem
+
+    model = QStandardItemModel()
+    item = QStandardItem("Test Item")
+    model.appendRow(item)
+    assert model.rowCount() == 1
+    assert model.item(0).text() == "Test Item"
