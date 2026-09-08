@@ -2,14 +2,10 @@ name: Tests
 
 on:
   push:
-  pull_request:
 
 jobs:
   unit-tests:
-    runs-on: ${{ matrix.os }}
-    strategy:
-      matrix:
-        os: [macos-latest, windows-latest]
+    runs-on: [self-hosted, macOS, ARM64, maya-2026]
 
     steps:
       - name: Checkout code
