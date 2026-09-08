@@ -1,5 +1,4 @@
 from maya import cmds
-import os
 
 
 def test_initialize_plugin():

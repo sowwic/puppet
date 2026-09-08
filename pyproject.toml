@@ -50,6 +50,9 @@ package-dir = { "" = "src" }
 
 [tool.ruff]
 src = ["src"]
+extend-exclude = [
+  "src/puppet/resources/**/*.py"
+]
 
 show-fixes = true
 line-length = 89

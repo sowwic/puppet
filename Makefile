@@ -61,6 +61,10 @@ lint: ## Run Ruff linter on source and tests
 	$(call banner, Running Ruff linter...)
 	@uv run ruff check src tests || true
 
+lint-fix: ## Run Ruff linter and fix fixable issues
+		$(call banner, Running Ruff linter with fixes)
+	@uv run ruff check --fix src tests || true
+
 format: ## Format source and tests with Ruff
 	$(call banner, Running Ruff formatter...)
 	@uv run ruff format src tests
@@ -131,7 +135,7 @@ install-module:  maya-module-file  ## Copy puppet.mod to Maya's module directory
 	printf 'Installed puppet.mod in %s\n' "$$module_path"
 
 .PHONY: install
-install: dist install-module
+install: dist install-module  ## Build and install puppet module
 
 .PHONY: uninstall
 uninstall: ## Remove puppet.mod from Maya's module directory
