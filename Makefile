@@ -67,13 +67,13 @@ format: ## Format source and tests with Ruff
 
 pytest: ## Run tests using mayapy_test
 	$(call banner, Running pytest...)
-	@uv run ./mayapy_test tests
+	@uv run ./mayapy_test.sh tests
 
 pytest-pdb: ## Run tests with pdb and clean output
 	$(call banner, Cleaning pytest output dir...)
 	@rm -rf $(TEST_OUTPUT_DIR)
 	$(call banner, Running pytest with pdb...)
-	@uv run ./mayapy_test --pdb tests
+	@uv run ./mayapy_test.sh --pdb tests
 
 mkdocs: ## Start MkDocs documentation server
 	$(call banner, Building MkDocs documentation...)
