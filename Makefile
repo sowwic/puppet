@@ -1,6 +1,6 @@
 SHELL := /bin/bash
 
-APP_NAME = puppet
+PACKAGE_NAME = puppet
 VERSION := $(shell tr -d '\r\n' < "VERSION")
 
 ROOT_DIR := $(CURDIR)
@@ -15,7 +15,11 @@ DIST_PLUGINS_DIR = $(DIST_MAYA_MODULE_DIR)/plug-ins
 DIST_MODULE_ROOT := $(DIST_DIR)/puppet_module
 DIST_MODULE_FILE := $(DIST_DIR)/puppet.mod
 
-SOURCE_PLUGINS_DIR = src/plug-ins
+SOURCE_DIR = $(ROOT_DIR)/src
+SOURCE_PLUGINS_DIR = $(SOURCE_DIR)/plug-ins
+SOURCES_RESOURCES_DIR = $(SOURCE_DIR)/$(PACKAGE_NAME)/resources
+SOURCE_RESOURCES_QRC = $(SOURCES_RESOURCES_DIR)/resources.qrc
+SOURCE_RESOURCES_PY = $(SOURCES_RESOURCES_DIR)/resources_rc.py
 
 
 # Colors
@@ -77,13 +81,13 @@ mkdocs: ## Start MkDocs documentation server
 
 check: lint pytest ## Run lint and tests
 
-build: ## Build project package
-	$(call banner, Building $(APP_NAME)...)
+build: qrc ## Build project package
+	$(call banner, Building $(PACKAGE_NAME)...)
 	@uv build
 
 qrc: ## Generate QRC resources
 	$(call banner, Generating QRC resources...)
-	@pyside6-rcc resources/resources.qrc -o resources/resources_rc.py
+	@pyside6-rcc $(SOURCE_RESOURCES_QRC) -o $(SOURCE_RESOURCES_PY)
 	@printf "$(GREEN)QRC generation complete.$(RESET)\n"
 
 .PHONY: venv
