@@ -4,7 +4,7 @@ on:
   push:
 
 jobs:
-  unit-tests:
+  maya-tests:
     runs-on: [self-hosted, macOS, ARM64, maya-2026]
 
     steps:
