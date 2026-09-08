@@ -14,5 +14,5 @@ jobs:
       - name: Install the project
         run: uv sync --locked --all-extras --dev
 
-      - name: Run tests
-        run: uv run pytest tests
+      - name: Run Maya tests
+        run: bash ./mayapy_test.sh
