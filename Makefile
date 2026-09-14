@@ -21,6 +21,10 @@ SOURCES_RESOURCES_DIR = $(SOURCE_DIR)/$(PACKAGE_NAME)/resources
 SOURCE_RESOURCES_QRC = $(SOURCES_RESOURCES_DIR)/resources.qrc
 SOURCE_RESOURCES_PY = $(SOURCES_RESOURCES_DIR)/resources_rc.py
 
+# GITHUB
+TESTS_WORKFLOW ?= unit_tests.yml
+GIT_BRANCH ?= $(shell git rev-parse --abbrev-ref HEAD)
+
 
 # Colors
 BLUE := \033[34m
@@ -145,3 +149,7 @@ uninstall: ## Remove puppet.mod from Maya's module directory
 	module_path="$${MAYA_MODULE_PATH%%:*}"; \
 	rm -f "$$module_path/puppet.mod"; \
 	printf 'Removed puppet.mod from %s\n' "$$module_path"  ## Build package and install maya module
+
+.PHONE: dispatch-pytest
+dispatch-pytest:  ## Use gh cli to run unit tests workflow on current branch using self hosted runner
+	gh workflow run $(TESTS_WORKFLOW) --ref $(GIT_BRANCH)
