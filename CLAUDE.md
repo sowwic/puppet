@@ -34,6 +34,7 @@ Tests need `MAYAPY` (and `MAYA_MODULE_PATH` for install) from `.env` in the repo
 - **Module layout**: `src/puppet/` is the package, `src/plug-ins/puppet_plugin.py` the plug-in (loaded by name in `tests/test_plugin.py`), `templates/puppet.mod` the module file with `@VERSION@` / `@MODULE_ROOT@` placeholders substituted by `make`.
 - **Maya-dependent imports**: `puppet.core.constants` calls `cmds.moduleInfo(moduleName="puppet")` at import time to find the module root (log file location), so `puppet.core.*` can only be imported inside Maya/mayapy with the module on `MAYA_MODULE_PATH`. `puppet.core.logger.PuppetLogger` is installed by the plug-in via `logging.setLoggerClass`.
 - **Version** lives in the `VERSION` file (read by `puppet/version.py` and the Makefile).
+- **Nyx plugins**: Nyx needs Python 3.14 and runs plugins in its own process (not Maya); it discovers `nyx_plugin.py` files in `plugin_paths` / `NYX_PLUGIN_PATH`. Never import plugin modules from the Maya-side package or tests (mayapy is 3.11). The editor finds `nyx` (`from nyx.api.v1 import ...`) through `PYTHONPATH` in `.env`, exported by direnv (`dotenv` in `.envrc`), since nyx can't be a dependency of this 3.11 project.
 - **Qt**: `resources_rc.py` is generated, excluded from ruff, and is a dev-only PySide6 dependency (Maya provides PySide6 at runtime).
 
 ## Conventions

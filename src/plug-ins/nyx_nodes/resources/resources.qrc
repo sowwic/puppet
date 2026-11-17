@@ -1,0 +1,7 @@
+
+<!DOCTYPE RCC>
+<RCC>
+  <qresource prefix="/puppet_maya">
+    <file>icons/home.png</file>
+  </qresource>
+</RCC>
