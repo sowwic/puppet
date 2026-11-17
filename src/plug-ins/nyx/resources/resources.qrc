@@ -3,5 +3,6 @@
 <RCC>
   <qresource prefix="/puppet_maya">
     <file>icons/home.png</file>
+    <file>icons/tpose.png</file>
   </qresource>
 </RCC>

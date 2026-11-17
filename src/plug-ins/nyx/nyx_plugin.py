@@ -4,6 +4,7 @@ import logging
 from .resources import resources_rc  # noqa: F401
 from nyx.api.v1 import NyxPluginManager, NyxPlugin
 
+from .nodes.rig_build import PuppetRigBuildNode
 
 LOGGER = logging.getLogger(__name__)
 
@@ -33,7 +34,7 @@ class PuppetNyxPlugin(NyxPlugin):
         """
         plugin = cls()
         plugin.contents.node_components = []
-        plugin.contents.nodes = []
+        plugin.contents.nodes = [PuppetRigBuildNode]
         plugin.contents.util_objects = []
         plugin.contents.graphics_objects = []
 

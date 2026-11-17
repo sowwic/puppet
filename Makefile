@@ -16,7 +16,7 @@ MAKEFILES_MODULES = general/python general/repo dcc/maya general/qt
 	@curl -fsSL $(MAKEFILES_URL)/$*.mk -o $@
 include $(MAKEFILES_MODULES:%=.make/%.mk)
 
-NYX_RESOURCES_DIR = src/plug-ins/nyx_nodes/resources
+NYX_RESOURCES_DIR = src/plug-ins/nyx/resources
 
 .PHONY: qrc-nyx
 qrc-nyx: ## Generate Python resources of the Nyx node plugin
