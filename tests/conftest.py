@@ -1,10 +1,12 @@
 import pathlib
+
 import pytest
-import maya.standalone
 
 
 @pytest.fixture(scope="session", autouse=True)
 def maya_session():
+    import maya.standalone
+
     maya.standalone.initialize(name="python")
     yield
     maya.standalone.uninitialize()

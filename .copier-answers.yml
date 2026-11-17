@@ -1,0 +1,17 @@
+_commit: v1
+_src_path: gh:sowwic/copier-maya-plugin
+author: Dima Shevchenko
+author_email: 47799401+sowwic@users.noreply.github.com
+develop_branch: develop
+github_user: sowwic
+github_workflow: true
+ide: nvim
+initial_version: 0.0.1
+package_name: puppet
+package_slug: puppet
+pin_python_version: true
+project_name: Puppet
+project_slug: puppet
+python_version: '3.11'
+release_branch: main
+use_qt: true

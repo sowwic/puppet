@@ -7,52 +7,45 @@ authors = [
 ]
 license = {text = "MIT"}
 readme = "README.md"
-requires-python = ">=3.11.9,<3.14"
+requires-python = ">=3.11"
+packages = [
+    {include = "puppet", from="src"},
+]
 dependencies = [
-
 ]
 
-
 [build-system]
-requires = ["uv_build>=0.10.6, <0.13"]
+requires = ["uv_build>=0.10.6"]
 build-backend = "uv_build"
 
 [tool.uv.build-backend]
-module-name = ["puppet"]
+module-name = "puppet"
 
 [dependency-groups]
 dev = [
     "pytest",
     "pytest-cov",
     "pytest-mock",
-    "mkdocs (>=1.6.1,<2.0.0)",
-    "mkdocs-material (>=9.7.0,<10.0.0)",
-    "mkdocstrings[python] (>=1.0.0,<2.0.0)",
-    "mkdocs-autorefs (>=1.4.3,<2.0.0)",
-    "mkdocs-autoapi (>=0.4.1,<0.5.0)",
-    "ruff",
     "maya-stubs",
     "pyside6",
+    "mkdocs",
+    "mkdocs-material",
+    "mkdocstrings[python]",
+    "mkdocs-autorefs",
+    "mkdocs-autoapi",
+    "ruff",
+    "debugpy",
 ]
-
-runtime = [
-
-]
+# Installed into the temporary Maya module by mayapy_test.sh
 maya-pytest = [
     "pytest",
     "pytest-cov",
     "pytest-mock",
 ]
 
-[tool.setuptools]
-packages = ["puppet"]
-package-dir = { "" = "src" }
-
 [tool.ruff]
 src = ["src"]
-extend-exclude = [
-  "src/puppet/resources/**/*.py"
-]
+exclude = ["**/resources_rc.py"]
 
 show-fixes = true
 line-length = 89
@@ -69,3 +62,12 @@ lint.ignore = [
 
 [tool.pytest.ini_options]
 addopts = "--cov=puppet --cov-report=term-missing"
+log_cli = true
+log_cli_level = "ERROR"
+
+[tool.ty.rules]
+unresolved-attribute="ignore"
+invalid-argument-type="ignore"
+invalid-assignment="ignore"
+invalid-return-type="ignore"
+invalid-method-override="ignore"

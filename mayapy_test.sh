@@ -1,11 +1,14 @@
 #!/usr/bin/env bash
-
 set -euo pipefail
+
+# Runs the test suite inside mayapy (maya.standalone).
+# The package is installed into a temporary Maya module, so tests exercise the
+# same layout Maya loads. Extra arguments are passed to pytest.
+
 # -----------------------------
 # Configuration
 # -----------------------------
 ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-ENV_FILE="${MAYA_CI_ENV_FILE:-$ROOT_DIR/.env}"
 
 if [[ -n "${MAYA_CI_ENV_FILE:-}" ]]; then
   ENV_FILE="$MAYA_CI_ENV_FILE"
@@ -24,29 +27,31 @@ if [[ ! -f "$ENV_FILE" ]]; then
   exit 1
 fi
 
-# Load .env if exists (MAYAPY should be defined there)
+# MAYAPY should be defined in the env file
 set -a
 source "$ENV_FILE"
 set +a
 
 if [ -z "${MAYAPY:-}" ]; then
-  echo "MAYAPY not set. Define it in .env"
+  echo "MAYAPY not set. Define it in $ENV_FILE"
   exit 1
 fi
 
 echo "Using mayapy: $MAYAPY"
+
 # -----------------------------
-#  Build packages
+#  Build temporary Maya module
 # -----------------------------
+MODULE_NAME="puppet"
 BUILD_DIR="$ROOT_DIR/build/maya_pytest"
-MODULE_ROOT="$BUILD_DIR/puppet_module"
+MODULE_ROOT="$BUILD_DIR/${MODULE_NAME}_module"
 MODULES_DIR="$BUILD_DIR/modules"
 VERSION="$(tr -d '\r\n' <"$ROOT_DIR/VERSION")"
 
 rm -rf "$BUILD_DIR"
 mkdir -p "$MODULE_ROOT/python" "$MODULE_ROOT/plug-ins" "$MODULES_DIR"
 
-echo "Installing puppet and test dependencies as a Maya module"
+echo "Installing $MODULE_NAME and test dependencies as a Maya module"
 uv pip install \
   --python "$MAYAPY" \
   --target "$MODULE_ROOT/python" \
@@ -56,12 +61,15 @@ uv pip install \
 [ ! -d "$ROOT_DIR/src/plug-ins" ] ||
   cp -R "$ROOT_DIR/src/plug-ins/." "$MODULE_ROOT/plug-ins/"
 
-printf '+ puppet %s %s\nPYTHONPATH *:=python' \
-  "$VERSION" "$MODULE_ROOT" >"$MODULES_DIR/puppet.mod"
+printf '+ %s %s %s\nPYTHONPATH +:= python\n' \
+  "$MODULE_NAME" "$VERSION" "$MODULE_ROOT" >"$MODULES_DIR/$MODULE_NAME.mod"
 
 unset PYTHONPATH
 export MAYA_MODULE_PATH="$MODULES_DIR${MAYA_MODULE_PATH:+:$MAYA_MODULE_PATH}"
 
+# -----------------------------
+#  Run tests
+# -----------------------------
 "$MAYAPY" -c '
 import sys
 import maya.standalone
@@ -70,11 +78,10 @@ maya.standalone.initialize(name="python")
 try:
     import maya.cmds
     import pytest
-    import os
 
-    puppet_module_path = maya.cmds.moduleInfo(path=True, moduleName="puppet")
-    print(f"Running tests for puppet module at: {puppet_module_path})")
-    raise SystemExit(pytest.main(["-vvv", *sys.argv[1:]]))
+    module_path = maya.cmds.moduleInfo(path=True, moduleName=sys.argv[1])
+    print(f"Running tests for {sys.argv[1]} module at: {module_path}")
+    raise SystemExit(pytest.main(["-vvv", *sys.argv[2:]]))
 finally:
     maya.standalone.uninitialize()
-' "$ROOT_DIR/tests" "$@"
+' "$MODULE_NAME" "$ROOT_DIR/tests" "$@"

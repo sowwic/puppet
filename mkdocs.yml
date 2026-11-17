@@ -1,5 +1,5 @@
-site_name: puppet Documentation
-site_description: Documentation for puppet.
+site_name: Puppet Documentation
+site_description: Documentation for Puppet.
 site_author: Dima Shevchenko
 theme:
   name: material
@@ -10,7 +10,8 @@ plugins:
       autoapi_dir: "src/puppet"
       autoapi_ignore:
         - "**/version.py"
-
+        - "**/resources/*"
+        - "**/main.py"
       autoapi_file_patterns:
         - "*.py"
   - mkdocstrings:

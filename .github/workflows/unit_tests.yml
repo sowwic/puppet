@@ -5,15 +5,6 @@ on:
   workflow_dispatch:
 
 jobs:
+  # Runs on a self-hosted runner with Maya installed (see mayapy_test.sh).
   maya-tests:
-    runs-on: [self-hosted, macOS, ARM64, maya-2026]
-
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-
-      - name: Install the project
-        run: uv sync --locked --all-extras --dev
-
-      - name: Run Maya tests
-        run: bash ./mayapy_test.sh
+    uses: sowwic/gh-workflows/.github/workflows/maya-tests.yml@v1
